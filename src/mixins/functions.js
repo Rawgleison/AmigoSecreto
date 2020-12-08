@@ -307,6 +307,10 @@ const funcoes = {
       },
       porcent(val){
         return parseFloat(val).toLocaleString('pt-br', {maximumFractionDigits: 2})+"%";
+      },
+      telefone(val){
+        return funcoes.methods.mascara_cel(val);
+
       }
     },
 }

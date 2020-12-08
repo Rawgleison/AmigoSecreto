@@ -2,22 +2,28 @@
   require('functions.php');
   require('connect.php');
 
-if (!isset($_SERVER['PHP_AUTH_USER'])) {
-    RespHttp("",200);
-} else {
-    $user = strtoupper($_SERVER['PHP_AUTH_USER']);
-    $pass = $_SERVER['PHP_AUTH_PW'];
+  $_POST = json_decode(file_get_contents('php://input'), true);
 
-    $sql = "select * from participantes where ((upper(nome) = '$user') or (telefone = '$user')) and password = '$pass'";
+
+if (!isset($_POST['user'])) {
+    RespHttp("ERROR: Usuário não passado",200);
+} else
+ {
+    $user = strtoupper($_POST['user']);
+    $pass = $_POST['pass'];
+
+    $sql = "select * from participantes where upper(login) = '$user' and password = '$pass'";
 
     if($res = mysqli_query($conn,$sql)){
         if(mysqli_num_rows($res)>0){
-            RespHttp("Sucesso $user com senha $pass",200);
+            $r = mysqli_fetch_assoc($res);
+            RespHttp($r,200);
         }else{
-            respHttp("Nenhum usuário encontrado",401);
+            respHttp("Nenhum usuário encontrado ".$sql,401);
         }
     }else{
-        respHttp("Erro ao tentar buscar o usuário.",400);
+        respHttp("Erro ao tentar buscar o usuário.",500);
     }
 }
+
 ?>
